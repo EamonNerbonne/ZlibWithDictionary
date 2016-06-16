@@ -46,6 +46,7 @@
   <ItemGroup>
     <Compile Include="DeflateCompression.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ZlibCodecHelpers.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
