@@ -13,7 +13,9 @@ namespace ZlibWithDictionary
         /// <param name="compressionLevel">How hard to try compressing - CompressionLevel.Default (level 6) provides a good balance between performance and compression.  Higher levels can sometimes reduce compression.</param>
         /// <param name="windowSize">The size of the context window in bits (9-15 or null for default).  Larger window sizes usually increase compression but can reduce it.</param>
         /// <param name="compressionStrategy">Which compression strategy to use.  Default tends to compress best, if your data has few repetitve subsequences, you can try Filtered; if it has none (but a non-uniform symbol distribution), you can try Huffman-only.</param>
-        /// <param name="dictionary">A preset dictionary of data similar to the data you will compress (or null, for none).  If you provide a dictionary, you cannot decompress without the exact same dictionary.  It is not useful to include a dictionary larger than 2^windowSize.</param>
+        /// <param name="dictionary">A preset dictionary of data similar to the data you will compress (or null, for none).  If you provide a dictionary, you cannot decompress without the exact same dictionary.  It is not useful to include a dictionary larger than 2^windowSize.
+        /// The best dictionary is one that is contains substrings that are likely to occur in the input - the longer the matching substrings, and the more likely they occur in the input, the better.
+        /// </param>
         /// <returns>The compressed data.</returns>
         public static byte[] ZlibCompressWithDictionary(byte[] inputData, CompressionLevel compressionLevel, int? windowSize, CompressionStrategy compressionStrategy, byte[] dictionary)
         {
@@ -24,6 +26,7 @@ namespace ZlibWithDictionary
                 ZlibCodec codec = new ZlibCodec();
 
                 codec.AssertOk("InitializeDeflate", codec.InitializeDeflate(CompressionLevel.Level5, 9));
+                
 
                 if (dictionary != null) {
                     codec.AssertOk("SetDictionary", codec.SetDictionary(dictionary));
