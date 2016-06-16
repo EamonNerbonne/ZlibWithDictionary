@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>$id$</id>
+    <version>$version$</version>
+    <title>$title$</title>
+    <authors>$author$</authors>
+    <owners>$author$</owners>
+    <licenseUrl>http://www.apache.org/licenses/LICENSE-2.0</licenseUrl>
+    <projectUrl>https://github.com/EamonNerbonne/ZlibWithDictionary</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <summary>$description$</summary>
+    <description>
+      This is a plain wrapper around DotNetZip that allows Deflate compression with preset dictionary.
+      This is particularly useful for compressing small byte-sequences (diminishing returns beyond 32k) where the content being compressed follows predictable patterns such a web-service results following a known schema or html documents.
+      The best dictionary is one that is contains substrings that are likely to occur in the input - the longer the matching substrings, and the more likely they occur in the input, the better.
+      The only two methods provided are DeflateCompression.ZlibCompressWithDictionary and Deflate.ZlibDecompressWithDictionary (intellisense explains the parameters).
+      Per the DotNetZip docs, this compression is compatible with the deflate RFC1950 as implemented by the common zlib library (ref: http://zlib.net).
+      (Note that although gzip uses the same algorithm, it uses a slightly different and thus incompatible header.)
+    </description>
+    <releaseNotes>Initial public release.</releaseNotes>
+    <copyright>Copyright 2016</copyright>
+    <tags>Deflate zlib setDictionary Dictionary gzip DotNetZip</tags>
+  </metadata>
+</package>
