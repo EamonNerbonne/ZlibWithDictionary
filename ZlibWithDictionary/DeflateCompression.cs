@@ -17,16 +17,19 @@ namespace ZlibWithDictionary
         /// The best dictionary is one that is contains substrings that are likely to occur in the input - the longer the matching substrings, and the more likely they occur in the input, the better.
         /// </param>
         /// <returns>The compressed data.</returns>
-        public static byte[] ZlibCompressWithDictionary(byte[] inputData, CompressionLevel compressionLevel, int? windowSize, CompressionStrategy compressionStrategy, byte[] dictionary)
+        public static byte[] ZlibCompressWithDictionary(byte[] inputData, byte[] dictionary, CompressionLevel compressionLevel = CompressionLevel.Default, int? windowSize = null, CompressionStrategy compressionStrategy = CompressionStrategy.Default)
         {
             const int bufferSize = 256;
             byte[] buffer = new byte[bufferSize];
             using (var ms = new MemoryStream()) {
 
                 ZlibCodec codec = new ZlibCodec();
-
-                codec.AssertOk("InitializeDeflate", codec.InitializeDeflate(CompressionLevel.Level5, 9));
-                
+                codec.Strategy = compressionStrategy;
+                codec.AssertOk("InitializeDeflate",
+                    windowSize == null
+                        ? codec.InitializeDeflate(compressionLevel)
+                        : codec.InitializeDeflate(compressionLevel, windowSize.Value)
+                );
 
                 if (dictionary != null) {
                     codec.AssertOk("SetDictionary", codec.SetDictionary(dictionary));
