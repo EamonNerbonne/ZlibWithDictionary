@@ -18,7 +18,7 @@
       Per the DotNetZip docs, this compression is compatible with the deflate RFC1950 as implemented by the common zlib library (ref: http://zlib.net).
       (Note that although gzip uses the same algorithm, it uses a slightly different and thus incompatible header.)
     </description>
-    <releaseNotes>Simplify method signature</releaseNotes>
+    <releaseNotes>Update DotNetZip</releaseNotes>
     <copyright>Copyright 2016</copyright>
     <tags>Deflate zlib setDictionary Dictionary gzip DotNetZip</tags>
   </metadata>
