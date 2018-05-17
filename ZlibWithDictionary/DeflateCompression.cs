@@ -20,11 +20,10 @@ namespace ZlibWithDictionary
         public static byte[] ZlibCompressWithDictionary(byte[] inputData, byte[] dictionary, CompressionLevel compressionLevel = CompressionLevel.Default, int? windowSize = null, CompressionStrategy compressionStrategy = CompressionStrategy.Default)
         {
             const int bufferSize = 256;
-            byte[] buffer = new byte[bufferSize];
+            var buffer = new byte[bufferSize];
             using (var ms = new MemoryStream()) {
 
-                ZlibCodec codec = new ZlibCodec();
-                codec.Strategy = compressionStrategy;
+                var codec = new ZlibCodec { Strategy = compressionStrategy };
                 codec.AssertOk("InitializeDeflate",
                     windowSize == null
                         ? codec.InitializeDeflate(compressionLevel)
@@ -84,13 +83,13 @@ namespace ZlibWithDictionary
         {
             using (var ms = new MemoryStream()) {
                 const int bufferSize = 256;
-                byte[] buffer = new byte[bufferSize];
+                var buffer = new byte[bufferSize];
 
-                ZlibCodec codec = new ZlibCodec();
-
-                codec.InputBuffer = compressedData;
-                codec.NextIn = 0;
-                codec.AvailableBytesIn = compressedData.Length;
+                var codec = new ZlibCodec {
+                    InputBuffer = compressedData,
+                    NextIn = 0,
+                    AvailableBytesIn = compressedData.Length
+                };
 
                 codec.AssertOk("InitializeInflate", codec.InitializeInflate());
 
