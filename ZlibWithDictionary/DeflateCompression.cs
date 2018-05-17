@@ -4,7 +4,7 @@ using Ionic.Zlib;
 
 namespace ZlibWithDictionary
 {
-    public class DeflateCompression
+    public static class DeflateCompression
     {
         /// <summary>
         /// Compress a byte array using the deflate algorithm
