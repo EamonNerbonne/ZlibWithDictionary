@@ -22,7 +22,6 @@ namespace ZlibWithDictionary
             const int bufferSize = 256;
             var buffer = new byte[bufferSize];
             using (var ms = new MemoryStream()) {
-
                 var codec = new ZlibCodec { Strategy = compressionStrategy };
                 codec.AssertOk("InitializeDeflate",
                     windowSize == null
@@ -34,8 +33,9 @@ namespace ZlibWithDictionary
                     codec.AssertOk("SetDictionary", codec.SetDictionary(dictionary));
 
                     var dictionaryAdler32 = ((int)Adler.Adler32(1u, dictionary, 0, dictionary.Length));
-                    if (codec.Adler32 != dictionaryAdler32)
+                    if (codec.Adler32 != dictionaryAdler32) {
                         throw new InvalidOperationException("Impossible: codec should have an adler32 checksum fully determined by the dictionary");
+                    }
                 }
 
                 codec.InputBuffer = inputData;
@@ -62,8 +62,9 @@ namespace ZlibWithDictionary
                     var bytesToWrite = bufferSize - codec.AvailableBytesOut;
                     ms.Write(buffer, 0, bytesToWrite);
 
-                    if (deflateFinishErrorCode == ZlibConstants.Z_STREAM_END)
+                    if (deflateFinishErrorCode == ZlibConstants.Z_STREAM_END) {
                         break;
+                    }
 
                     codec.AssertOk("Deflate(Finish)", deflateFinishErrorCode);
                 }
@@ -107,12 +108,14 @@ namespace ZlibWithDictionary
                     } else if (inflateReturnCode == ZlibConstants.Z_NEED_DICT && dictionary != null) {
                         //implies bytesToWrite was 0
                         var dictionaryAdler32 = ((int)Adler.Adler32(1u, dictionary, 0, dictionary.Length));
-                        if (codec.Adler32 != dictionaryAdler32)
+                        if (codec.Adler32 != dictionaryAdler32) {
                             throw new InvalidOperationException($"Compressed data is requesting a dictionary with adler32 {codec.Adler32}, but the dictionary is actually {dictionaryAdler32}");
+                        }
 
                         codec.AssertOk("SetDictionary", codec.SetDictionary(dictionary));
-                    } else
+                    } else {
                         codec.AssertOk("Inflate", inflateReturnCode);
+                    }
                 }
 
                 codec.AssertOk("EndInflate", codec.EndInflate());
