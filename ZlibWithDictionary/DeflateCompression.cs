@@ -119,5 +119,12 @@ namespace ZlibWithDictionary
                 return ms.ToArray();
             }
         }
+
+        internal static void AssertOk(this ZlibCodec codec, string Message, int errorCode)
+        {
+            if (errorCode != 0) {
+                throw new InvalidOperationException("Failed with " + errorCode + "; " + Message + "; " + codec.Message);
+            }
+        }
     }
 }
