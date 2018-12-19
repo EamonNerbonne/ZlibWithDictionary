@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup Label="Configuration">
     <Version>2.3.0.0</Version>
-    <PackageReleaseNotes>Bump DotNetZip dependency version to be .net core compatible</PackageReleaseNotes>
+    <PackageReleaseNotes>Add SourceLink support; Bump DotNetZip dependency version to be .net core compatible</PackageReleaseNotes>
     <Authors>Eamon Nerbonne</Authors>
     <Owners>Eamon Nerbonne</Owners>
     <Title>ZlibWithDictionary</Title>
