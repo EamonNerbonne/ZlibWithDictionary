@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup Label="Configuration">
-    <Version>2.2.0.0</Version>
-    <PackageReleaseNotes>Add support for .net standard 2.0</PackageReleaseNotes>
+    <Version>2.3.0.0</Version>
+    <PackageReleaseNotes>Bump DotNetZip dependency version to be .net core compatible</PackageReleaseNotes>
     <Authors>Eamon Nerbonne</Authors>
     <Owners>Eamon Nerbonne</Owners>
     <Title>ZlibWithDictionary</Title>
@@ -22,6 +22,6 @@
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="DotNetZip" Version="1.11.0" NoWarn="NU1701" />
+    <PackageReference Include="DotNetZip" Version="1.13.0" NoWarn="NU1701" />
   </ItemGroup>
 </Project>
