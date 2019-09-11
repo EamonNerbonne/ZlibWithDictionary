@@ -21,57 +21,56 @@ namespace ZlibWithDictionary
         {
             const int bufferSize = 256;
             var buffer = new byte[bufferSize];
-            using (var ms = new MemoryStream()) {
-                var codec = new ZlibCodec { Strategy = compressionStrategy };
-                codec.AssertOk("InitializeDeflate",
-                    windowSize == null
-                        ? codec.InitializeDeflate(compressionLevel)
-                        : codec.InitializeDeflate(compressionLevel, windowSize.Value)
-                );
+            using var ms = new MemoryStream();
+            var codec = new ZlibCodec { Strategy = compressionStrategy };
+            codec.AssertOk("InitializeDeflate",
+                windowSize == null
+                    ? codec.InitializeDeflate(compressionLevel)
+                    : codec.InitializeDeflate(compressionLevel, windowSize.Value)
+            );
 
-                if (dictionary != null) {
-                    codec.AssertOk("SetDictionary", codec.SetDictionary(dictionary));
+            if (dictionary != null) {
+                codec.AssertOk("SetDictionary", codec.SetDictionary(dictionary));
 
-                    var dictionaryAdler32 = (int)Adler.Adler32(1u, dictionary, 0, dictionary.Length);
-                    if (codec.Adler32 != dictionaryAdler32) {
-                        throw new InvalidOperationException("Impossible: codec should have an adler32 checksum fully determined by the dictionary");
-                    }
+                var dictionaryAdler32 = (int)Adler.Adler32(1u, dictionary, 0, dictionary.Length);
+                if (codec.Adler32 != dictionaryAdler32) {
+                    throw new InvalidOperationException("Impossible: codec should have an adler32 checksum fully determined by the dictionary");
                 }
-
-                codec.InputBuffer = inputData;
-                codec.AvailableBytesIn = inputData.Length;
-                codec.NextIn = 0;
-
-                codec.OutputBuffer = buffer;
-
-                while (codec.TotalBytesIn != inputData.Length) {
-                    codec.AvailableBytesOut = bufferSize;
-                    codec.NextOut = 0;
-                    codec.AssertOk("Deflate", codec.Deflate(FlushType.None));
-                    var bytesToWrite = bufferSize - codec.AvailableBytesOut;
-                    ms.Write(buffer, 0, bytesToWrite);
-                }
-
-                //we've read all input bytes, but may need several flushes to write all output bytes...
-
-                while (true) {
-                    codec.AvailableBytesOut = bufferSize;
-                    codec.NextOut = 0;
-                    var deflateFinishErrorCode = codec.Deflate(FlushType.Finish);
-
-                    var bytesToWrite = bufferSize - codec.AvailableBytesOut;
-                    ms.Write(buffer, 0, bytesToWrite);
-
-                    if (deflateFinishErrorCode == ZlibConstants.Z_STREAM_END) {
-                        break;
-                    }
-
-                    codec.AssertOk("Deflate(Finish)", deflateFinishErrorCode);
-                }
-
-                codec.AssertOk("EndDeflate", codec.EndDeflate());
-                return ms.ToArray();
             }
+
+            codec.InputBuffer = inputData;
+            codec.AvailableBytesIn = inputData.Length;
+            codec.NextIn = 0;
+
+            codec.OutputBuffer = buffer;
+
+            while (codec.TotalBytesIn != inputData.Length) {
+                codec.AvailableBytesOut = bufferSize;
+                codec.NextOut = 0;
+                codec.AssertOk("Deflate", codec.Deflate(FlushType.None));
+                var bytesToWrite = bufferSize - codec.AvailableBytesOut;
+                ms.Write(buffer, 0, bytesToWrite);
+            }
+
+            //we've read all input bytes, but may need several flushes to write all output bytes...
+
+            while (true) {
+                codec.AvailableBytesOut = bufferSize;
+                codec.NextOut = 0;
+                var deflateFinishErrorCode = codec.Deflate(FlushType.Finish);
+
+                var bytesToWrite = bufferSize - codec.AvailableBytesOut;
+                ms.Write(buffer, 0, bytesToWrite);
+
+                if (deflateFinishErrorCode == ZlibConstants.Z_STREAM_END) {
+                    break;
+                }
+
+                codec.AssertOk("Deflate(Finish)", deflateFinishErrorCode);
+            }
+
+            codec.AssertOk("EndDeflate", codec.EndDeflate());
+            return ms.ToArray();
         }
 
         /// <summary>
@@ -82,45 +81,44 @@ namespace ZlibWithDictionary
         /// <returns>The uncompressed data</returns>
         public static byte[] ZlibDecompressWithDictionary(byte[] compressedData, byte[] dictionary)
         {
-            using (var ms = new MemoryStream()) {
-                const int bufferSize = 256;
-                var buffer = new byte[bufferSize];
+            using var ms = new MemoryStream();
+            const int bufferSize = 256;
+            var buffer = new byte[bufferSize];
 
-                var codec = new ZlibCodec {
-                    InputBuffer = compressedData,
-                    NextIn = 0,
-                    AvailableBytesIn = compressedData.Length
-                };
+            var codec = new ZlibCodec {
+                InputBuffer = compressedData,
+                NextIn = 0,
+                AvailableBytesIn = compressedData.Length
+            };
 
-                codec.AssertOk("InitializeInflate", codec.InitializeInflate());
+            codec.AssertOk("InitializeInflate", codec.InitializeInflate());
 
-                codec.OutputBuffer = buffer;
+            codec.OutputBuffer = buffer;
 
-                while (true) {
-                    codec.NextOut = 0;
-                    codec.AvailableBytesOut = bufferSize;
-                    var inflateReturnCode = codec.Inflate(FlushType.None);
-                    var bytesToWrite = bufferSize - codec.AvailableBytesOut;
-                    ms.Write(buffer, 0, bytesToWrite);
+            while (true) {
+                codec.NextOut = 0;
+                codec.AvailableBytesOut = bufferSize;
+                var inflateReturnCode = codec.Inflate(FlushType.None);
+                var bytesToWrite = bufferSize - codec.AvailableBytesOut;
+                ms.Write(buffer, 0, bytesToWrite);
 
-                    if (inflateReturnCode == ZlibConstants.Z_STREAM_END) {
-                        break;
-                    } else if (inflateReturnCode == ZlibConstants.Z_NEED_DICT && dictionary != null) {
-                        //implies bytesToWrite was 0
-                        var dictionaryAdler32 = (int)Adler.Adler32(1u, dictionary, 0, dictionary.Length);
-                        if (codec.Adler32 != dictionaryAdler32) {
-                            throw new InvalidOperationException($"Compressed data is requesting a dictionary with adler32 {codec.Adler32}, but the dictionary is actually {dictionaryAdler32}");
-                        }
-
-                        codec.AssertOk("SetDictionary", codec.SetDictionary(dictionary));
-                    } else {
-                        codec.AssertOk("Inflate", inflateReturnCode);
+                if (inflateReturnCode == ZlibConstants.Z_STREAM_END) {
+                    break;
+                } else if (inflateReturnCode == ZlibConstants.Z_NEED_DICT && dictionary != null) {
+                    //implies bytesToWrite was 0
+                    var dictionaryAdler32 = (int)Adler.Adler32(1u, dictionary, 0, dictionary.Length);
+                    if (codec.Adler32 != dictionaryAdler32) {
+                        throw new InvalidOperationException($"Compressed data is requesting a dictionary with adler32 {codec.Adler32}, but the dictionary is actually {dictionaryAdler32}");
                     }
-                }
 
-                codec.AssertOk("EndInflate", codec.EndInflate());
-                return ms.ToArray();
+                    codec.AssertOk("SetDictionary", codec.SetDictionary(dictionary));
+                } else {
+                    codec.AssertOk("Inflate", inflateReturnCode);
+                }
             }
+
+            codec.AssertOk("EndInflate", codec.EndInflate());
+            return ms.ToArray();
         }
 
         internal static void AssertOk(this ZlibCodec codec, string Message, int errorCode)
