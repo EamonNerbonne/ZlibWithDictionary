@@ -32,7 +32,7 @@ namespace ZlibWithDictionary
                 if (dictionary != null) {
                     codec.AssertOk("SetDictionary", codec.SetDictionary(dictionary));
 
-                    var dictionaryAdler32 = ((int)Adler.Adler32(1u, dictionary, 0, dictionary.Length));
+                    var dictionaryAdler32 = (int)Adler.Adler32(1u, dictionary, 0, dictionary.Length);
                     if (codec.Adler32 != dictionaryAdler32) {
                         throw new InvalidOperationException("Impossible: codec should have an adler32 checksum fully determined by the dictionary");
                     }
@@ -107,7 +107,7 @@ namespace ZlibWithDictionary
                         break;
                     } else if (inflateReturnCode == ZlibConstants.Z_NEED_DICT && dictionary != null) {
                         //implies bytesToWrite was 0
-                        var dictionaryAdler32 = ((int)Adler.Adler32(1u, dictionary, 0, dictionary.Length));
+                        var dictionaryAdler32 = (int)Adler.Adler32(1u, dictionary, 0, dictionary.Length);
                         if (codec.Adler32 != dictionaryAdler32) {
                             throw new InvalidOperationException($"Compressed data is requesting a dictionary with adler32 {codec.Adler32}, but the dictionary is actually {dictionaryAdler32}");
                         }
