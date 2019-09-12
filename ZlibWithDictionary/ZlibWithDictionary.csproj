@@ -17,6 +17,7 @@
     <OutputType>library</OutputType>
     <NoWarn>CS1591</NoWarn>
     <LangVersion>8.0</LangVersion>
+    <Nullable>enable</Nullable>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
 

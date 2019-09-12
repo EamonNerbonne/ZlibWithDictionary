@@ -17,7 +17,7 @@ namespace ZlibWithDictionary
         /// The best dictionary is one that is contains substrings that are likely to occur in the input - the longer the matching substrings, and the more likely they occur in the input, the better.
         /// </param>
         /// <returns>The compressed data.</returns>
-        public static byte[] ZlibCompressWithDictionary(byte[] inputData, byte[] dictionary, CompressionLevel compressionLevel = CompressionLevel.Default, int? windowSize = null, CompressionStrategy compressionStrategy = CompressionStrategy.Default)
+        public static byte[] ZlibCompressWithDictionary(byte[] inputData, byte[]? dictionary, CompressionLevel compressionLevel = CompressionLevel.Default, int? windowSize = null, CompressionStrategy compressionStrategy = CompressionStrategy.Default)
         {
             const int bufferSize = 256;
             var buffer = new byte[bufferSize];
@@ -79,7 +79,7 @@ namespace ZlibWithDictionary
         /// <param name="compressedData">The deflate-compressed data</param>
         /// <param name="dictionary">The dictionary originally used to compress the data, or null if no dictionary was used.</param>
         /// <returns>The uncompressed data</returns>
-        public static byte[] ZlibDecompressWithDictionary(byte[] compressedData, byte[] dictionary)
+        public static byte[] ZlibDecompressWithDictionary(byte[] compressedData, byte[]? dictionary)
         {
             using var ms = new MemoryStream();
             const int bufferSize = 256;
