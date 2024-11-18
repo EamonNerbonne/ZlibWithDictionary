@@ -28,3 +28,9 @@ If you prefer to manually use the appropriate DotNetZip apis over importing this
 
 Per the DotNetZip docs, this compression is compatible with the deflate RFC as implemented by the common [zlib library](http://zlib.net).
 (Note that although gzip uses the same algorithm, it uses a slightly different and thus incompatible header.)
+
+
+Unaffected by DotNetZip directory traversal vulnerability
+---
+
+[DotNetZip has a directory traversal vulnerability](https://github.com/advisories/GHSA-xhg6-9j5j-w4vf) when extracting ZipEntry. Unfortunately, [DotNetZip](https://github.com/haf/DotNetZip.Semverd) is no longer maintained and will likely not be updated.  However, code using this library (and no other DotNetZip features) is not affected because the library as far as I can tell never touches any code-paths which use ZipEntry; this library only deals with simple byte arrays and never performs any I/O. In short: the vulnerability is in the zip-archive part of DotNetZip, not the Zlib algorithmic part.
